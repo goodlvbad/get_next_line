@@ -6,56 +6,86 @@
 /*   By: oearlene <oearlene@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/21 03:37:47 by oearlene          #+#    #+#             */
-/*   Updated: 2019/10/21 05:17:26 by oearlene         ###   ########.fr       */
+/*   Updated: 2019/10/30 03:02:21 by oearlene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char    *check_overflow(char *over, char **line)
+char	*ft_check_overflow(char *over, char **line)
 {
-    char    *p;
+	char *p;
 
-    p = NULL;
-    if (over)
-    {
-        if ((p = ft_strrchr(over, '\n')))
-        {
-            *p = '\0';
-            *line = ft_strdup(over);
-            ft_strcpy(over, ++p);
-        }
-        else
-        {
-            *line = ft_strdup(over);
-            ft_strclr(over);
-        }
-    }
-    else
-        *line = ft_strnew(1);
-    return (p);
+	p = NULL;
+	if (over)
+	{
+		if ((p = ft_strrchr(over, '\n')))
+		{
+			*p = '\0';
+			*line = ft_strdup(over);
+			ft_strcpy(over, ++p);
+		}
+		else
+		{
+			*line = ft_strdup(over);
+			ft_strclr(over);
+		}
+	}
+	else
+		*line = ft_strnew(1);
+	return (p);
 }
 
-int     get_next_line(int fd, char **line)
+int		ft_get_line(int fd, char **line, char **content)
 {
-    char            buff[BUFF_SIZE + 1];
-    int             byte_read;
-    char            *p;
-    static char     *over;
-    char            *tmp;
+	char	buff[BUFF_SIZE + 1];
+	int		byte_read;
+	char	*p;
+	char	*tmp;
 
-    p = check_overflow(over, line);
-    while (!p && (byte_read = read(fd, buff, BUFF_SIZE)))
-    {
-        buff[byte_read] = '\0';
-        if ((p = ft_strrchr(buff, '\n')))
-        {
-            *p = '\0';
-            over = ft_strdup(++p);
-        }
-        tmp = *line;
-        *line = ft_strjoin(*line, buff);
-        free(tmp);
-    }
-    return ((byte_read || ft_strlen(over) || ft_strlen(*line)) ? 1 : 0);
+	p = ft_check_overflow(*content, line);
+	while (!p && (byte_read = read(fd, buff, BUFF_SIZE)))
+	{
+		buff[byte_read] = '\0';
+		if ((p = ft_strrchr(buff, '\n')))
+		{
+			*p = '\0';
+			*content = ft_strdup(++p);
+		}
+		tmp = *line;
+		if (!(*line = ft_strjoin(*line, buff)) || buff < 0)
+			return (-1);
+		free(tmp);
+	}
+	return ((byte_read || ft_strlen(*line)) ? 1 : 0);
+}
+
+t_gnl	*ft_add_fd(int fd)
+{
+	t_gnl *new;
+
+	new = (t_gnl *)malloc(sizeof(t_gnl));
+	new->fd = fd;
+	new->content = NULL;
+	new->next = NULL;
+	return (new);
+}
+
+int		get_next_line(int fd, char **line)
+{
+	static t_gnl	*head;
+	t_gnl			*tmp;
+
+	if (fd < 0 || line == NULL)
+		return (-1);
+	if (head == NULL)
+		head = ft_add_fd(fd);
+	tmp = head;
+	while (tmp->fd != fd)
+	{
+		if (tmp->next == NULL)
+			tmp->next = ft_add_fd(fd);
+		tmp = tmp->next;
+	}
+	return (ft_get_line(tmp->fd, line, &tmp->content));
 }

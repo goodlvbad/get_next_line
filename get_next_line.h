@@ -6,7 +6,7 @@
 /*   By: oearlene <oearlene@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/21 05:08:20 by oearlene          #+#    #+#             */
-/*   Updated: 2019/10/21 05:10:51 by oearlene         ###   ########.fr       */
+/*   Updated: 2019/10/30 02:26:12 by oearlene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@
 
 #include <stdio.h>
 
-int     get_next_line(int fd, char **line);
+typedef struct		s_gnl
+{
+	int 			fd;
+	char 			*content;
+	struct s_gnl	*next;
+}					t_gnl;
+
+int					get_next_line(int fd, char **line);
 
 #endif
