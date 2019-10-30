@@ -13,7 +13,7 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# define BUFF_SIZE 35
+# define BUFF_SIZE 82
 
 # include <unistd.h>
 # include <fcntl.h>

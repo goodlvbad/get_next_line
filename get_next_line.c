@@ -6,7 +6,7 @@
 /*   By: oearlene <oearlene@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/21 03:37:47 by oearlene          #+#    #+#             */
-/*   Updated: 2019/10/30 22:02:34 by oearlene         ###   ########.fr       */
+/*   Updated: 2019/10/30 23:17:52 by oearlene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ char	*ft_check_overflow(char *content, char **line)
 			*p = '\0';
 			*line = ft_strdup(content);
 			ft_strcpy(content, ++p);
-			free(content);
 		}
 		else
 		{
