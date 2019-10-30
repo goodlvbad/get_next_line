@@ -6,29 +6,30 @@
 /*   By: oearlene <oearlene@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/21 03:37:47 by oearlene          #+#    #+#             */
-/*   Updated: 2019/10/30 03:02:21 by oearlene         ###   ########.fr       */
+/*   Updated: 2019/10/30 22:02:34 by oearlene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_check_overflow(char *over, char **line)
+char	*ft_check_overflow(char *content, char **line)
 {
 	char *p;
 
 	p = NULL;
-	if (over)
+	if (content)
 	{
-		if ((p = ft_strrchr(over, '\n')))
+		if ((p = ft_strrchr(content, '\n')))
 		{
 			*p = '\0';
-			*line = ft_strdup(over);
-			ft_strcpy(over, ++p);
+			*line = ft_strdup(content);
+			ft_strcpy(content, ++p);
+			free(content);
 		}
 		else
 		{
-			*line = ft_strdup(over);
-			ft_strclr(over);
+			*line = ft_strdup(content);
+			free(content);
 		}
 	}
 	else

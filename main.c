@@ -24,12 +24,14 @@ int     main(void)
 	{
 		get_next_line(fd1, &line);
 		printf("%s\n\n", line);
+		free(line);
 	}
 	fd2 = open("/Users/oearlene/Desktop/get_next_line/test.txt", O_RDONLY);
 	for(i = 0; 3 > i; i++)
 	{
 		get_next_line(fd2, &line);
 		printf("%s\n\n", line);
+		free(line);
 	}
 	return (0);
 }
