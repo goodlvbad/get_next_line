@@ -6,69 +6,66 @@
 /*   By: oearlene <oearlene@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/21 03:37:47 by oearlene          #+#    #+#             */
-/*   Updated: 2019/10/30 23:17:52 by oearlene         ###   ########.fr       */
+/*   Updated: 2019/10/31 04:43:22 by oearlene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_check_overflow(char *content, char **line)
+t_gnl	*ft_add_fd(int fd)
 {
-	char *p;
+	t_gnl *new;
 
-	p = NULL;
-	if (content)
+	if (!(new = (t_gnl *)malloc(sizeof(new))))
+		return (NULL);
+	new->fd = fd;
+	new->content = ft_strnew(BUFF_SIZE);
+	new->next = NULL;
+	return (new);
+}
+
+char	*ft_check(char **p, char *content)
+{
+	char *s;
+
+	if ((*p = ft_strchr(content, '\n')))
 	{
-		if ((p = ft_strrchr(content, '\n')))
-		{
-			*p = '\0';
-			*line = ft_strdup(content);
-			ft_strcpy(content, ++p);
-		}
-		else
-		{
-			*line = ft_strdup(content);
-			free(content);
-		}
+		s = ft_strsub(content, 0, *p - content);
+		ft_strcpy(content, ++(*p));
 	}
 	else
-		*line = ft_strnew(1);
-	return (p);
+	{
+		s = ft_strnew(ft_strlen(content) + 1);
+		ft_strcat(s, content);
+		ft_strclr(content);
+	}
+	return (s);
 }
 
 int		ft_get_line(int fd, char **line, char **content)
 {
 	char	buff[BUFF_SIZE + 1];
-	int		byte_read;
+	int		byte;
 	char	*p;
 	char	*tmp;
 
-	p = ft_check_overflow(*content, line);
-	while (!p && (byte_read = read(fd, buff, BUFF_SIZE)))
+	p = NULL;
+	byte = 1;
+	*line = ft_check(&p, *content);
+	while (!p && (byte = read(fd, buff, BUFF_SIZE)))
 	{
-		buff[byte_read] = '\0';
-		if ((p = ft_strrchr(buff, '\n')))
+		buff[byte] = '\0';
+		if ((p = ft_strchr(buff, '\n')))
 		{
-			*p = '\0';
-			*content = ft_strdup(++p);
+			ft_strcpy(*content, ++p);
+			ft_strclr(--p);
 		}
 		tmp = *line;
-		if (!(*line = ft_strjoin(*line, buff)) || buff < 0)
+		if (!(*line = ft_strjoin(tmp, buff)) || byte < 0)
 			return (-1);
-		free(tmp);
+		ft_strdel(&tmp);
 	}
-	return ((byte_read || ft_strlen(*line)) ? 1 : 0);
-}
-
-t_gnl	*ft_add_fd(int fd)
-{
-	t_gnl *new;
-
-	new = (t_gnl *)malloc(sizeof(t_gnl));
-	new->fd = fd;
-	new->content = NULL;
-	new->next = NULL;
-	return (new);
+	return ((ft_strlen(*line) || ft_strlen(*content) || byte) ? 1 : 0);
 }
 
 int		get_next_line(int fd, char **line)
