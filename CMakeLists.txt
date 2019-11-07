@@ -68,4 +68,4 @@ add_executable(get_next_line
         libft/libft.h
         get_next_line.c
         get_next_line.h
-        main.c)
+        main.c get_next_line.c)

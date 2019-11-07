@@ -1,5 +1,8 @@
-You must create the following functions in the order you believe makes most sense.
-We encourage you to use the functions you have already coded to write the next ones.
-The di culty level does not increase by assignment and the project has not been structured in any specific way.
-It is similar to a video game, where you can complete quests
-in the order of your choosing and use the loot from the previous quests to solve the next ones.
+
+2
+3
+
+4
+5
+
+6

@@ -6,7 +6,7 @@
 /*   By: oearlene <oearlene@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/21 05:08:20 by oearlene          #+#    #+#             */
-/*   Updated: 2019/11/07 21:42:38 by oearlene         ###   ########.fr       */
+/*   Updated: 2019/11/07 22:51:56 by oearlene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,6 @@
 # include <stdio.h>
 
 /*
-** read_buff	Read buffer
-** tmp			Pointer to temporary buffer used when reallocating line buffer
-** byte_read	The read function return value
-** p_to_n		The ft_strchr function return value (pointer to '\n')
 ** t_gnl		Struct for file descriptors
 ** fd			File descriptor
 ** buff			Buffer to keep already reading content from the first '\n'
@@ -39,6 +35,9 @@ typedef struct		s_gnl
 	struct s_gnl	*next;
 }					t_gnl;
 
+t_gnl				*ft_add_fd(int fd);
+char				*ft_check(char *buff, char **p_to_n);
+int					ft_get_line(const int fd, char **line, char *buff);
 int					get_next_line(const int fd, char **line);
 
 #endif

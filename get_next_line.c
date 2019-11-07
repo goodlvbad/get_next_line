@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: oearlene <oearlene@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/21 03:37:47 by oearlene          #+#    #+#             */
-/*   Updated: 2019/11/07 21:49:51 by oearlene         ###   ########.fr       */
+/*   Created: 2019/11/07 23:43:38 by oearlene          #+#    #+#             */
+/*   Updated: 2019/11/08 00:02:51 by oearlene         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,69 +24,65 @@ t_gnl	*ft_add_fd(int fd)
 	return (new);
 }
 
-char	*ft_check(char *buff, char **line)
+char	*ft_check(char *buff, char **p_to_n)
 {
-	char *p;
+	char *str;
 
-	p = NULL;
-	if (buff)
+	if ((*p_to_n = ft_strchr(buff, '\n')) != NULL)
 	{
-		if ((p = ft_strrchr(buff, '\n')))
-		{
-			*p = '\0';
-			*line = ft_strdup(buff);
-			ft_strcpy(buff, ++p);
-		}
-		else
-		{
-			*line = ft_strdup(buff);
-			ft_strclr(buff);
-		}
+		str = ft_strsub(buff, 0, *p_to_n - buff);
+		ft_strcpy(buff, ++(*p_to_n));
 	}
 	else
-		*line = ft_strnew(1);
-	return (p);
+	{
+		str = ft_strnew(ft_strlen(buff) + 1);
+		ft_strcat(str, buff);
+		ft_strclr(buff);
+	}
+	return (str);
 }
 
-int		ft_get_line(const int fd, char **line, char **buff)
+int		ft_get_line(const int fd, char **line, char *buff)
 {
-	char	read_buff[BUFF_SIZE + 1];
-	int		byte_read;
-	char	*tmp;
+	char	buff_read[BUFF_SIZE + 1];
 	char	*p_to_n;
+	char	*tmp;
+	int		byte_read;
 
-	p_to_n = ft_check(*buff, line);
-	while (!p_to_n && (byte_read = read(fd, read_buff, BUFF_SIZE)))
+	p_to_n = NULL;
+	byte_read = 1;
+	*line = ft_check(buff, &p_to_n);
+	while (!p_to_n && ((byte_read = read(fd, buff_read, BUFF_SIZE))))
 	{
-		read_buff[byte_read] = '\0';
-		if ((p_to_n = ft_strchr(read_buff, '\n')))
+		buff_read[byte_read] = '\0';
+		if ((p_to_n = ft_strchr(buff_read, '\n')) != NULL)
 		{
-			ft_strcpy((*buff), ++p_to_n);
+			ft_strcpy(buff, ++p_to_n);
 			ft_strclr(--p_to_n);
 		}
 		tmp = *line;
-		if (!(*line = ft_strjoin(*line, read_buff)) || buff < 0)
+		if (!(*line = ft_strjoin(tmp, buff_read)) || byte_read < 0)
 			return (-1);
 		ft_strdel(&tmp);
 	}
-	return ((ft_strlen(*line) || byte_read) ? 1 : 0);
+	return ((ft_strlen(*line) || ft_strlen(buff) || byte_read) ? 1 : 0);
 }
 
 int		get_next_line(const int fd, char **line)
 {
 	static t_gnl	*head;
-	t_gnl			*pointer;
+	t_gnl			*tmp;
 
-	if (fd < 0 || line == NULL)
+	if (fd < 0 || line == 0)
 		return (-1);
-	if (head == NULL)
+	if (!head)
 		head = ft_add_fd(fd);
-	pointer = head;
-	while (pointer->fd != fd)
+	tmp = head;
+	while (tmp->fd != fd)
 	{
-		if (pointer->next == NULL)
-			pointer->next = ft_add_fd(fd);
-		pointer = pointer->next;
+		if (tmp->next == NULL)
+			tmp->next = ft_add_fd(fd);
+		tmp = tmp->next;
 	}
-	return (ft_get_line(pointer->fd, line, &pointer->buff));
+	return ((ft_get_line(fd, line, tmp->buff)));
 }
